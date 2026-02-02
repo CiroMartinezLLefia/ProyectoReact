@@ -1,0 +1,98 @@
+[
+  {
+    "id": 1,
+    "nombre": "Maria",
+    "apellidos": "Garcia Lopez",
+    "promocion": "2024/2025",
+    "ciclo": "DAW",
+    "urlImagen": "https://randomuser.me/api/portraits/women/1.jpg"
+  },
+  {
+    "id": 2,
+    "nombre": "Joan",
+    "apellidos": "Martinez Puig",
+    "promocion": "2024/2025",
+    "ciclo": "DAW",
+    "urlImagen": "https://randomuser.me/api/portraits/men/2.jpg"
+  },
+  {
+    "id": 3,
+    "nombre": "Anna",
+    "apellidos": "Fernandez Vidal",
+    "promocion": "2023/2024",
+    "ciclo": "SMX",
+    "urlImagen": "https://randomuser.me/api/portraits/women/3.jpg"
+  },
+  {
+    "id": 4,
+    "nombre": "Pere",
+    "apellidos": "Soler Roca",
+    "promocion": "2023/2024",
+    "ciclo": "ARI",
+    "urlImagen": "https://randomuser.me/api/portraits/men/4.jpg"
+  },
+  {
+    "id": 5,
+    "nombre": "Laura",
+    "apellidos": "Navarro Serra",
+    "promocion": "2024/2025",
+    "ciclo": "IEA",
+    "urlImagen": "https://randomuser.me/api/portraits/women/5.jpg"
+  },
+  {
+    "id": 6,
+    "nombre": "Marc",
+    "apellidos": "Torres Marti",
+    "promocion": "2022/2023",
+    "ciclo": "DAW",
+    "urlImagen": "https://randomuser.me/api/portraits/men/6.jpg"
+  },
+  {
+    "id": 7,
+    "nombre": "Carla",
+    "apellidos": "Ruiz Benet",
+    "promocion": "2022/2023",
+    "ciclo": "SMX",
+    "urlImagen": "https://randomuser.me/api/portraits/women/7.jpg"
+  },
+  {
+    "id": 8,
+    "nombre": "David",
+    "apellidos": "Sanchez Costa",
+    "promocion": "2024/2025",
+    "ciclo": "ARI",
+    "urlImagen": "https://randomuser.me/api/portraits/men/8.jpg"
+  },
+  {
+    "id": 9,
+    "nombre": "Elena",
+    "apellidos": "Moreno Pla",
+    "promocion": "2023/2024",
+    "ciclo": "DAW",
+    "urlImagen": "https://randomuser.me/api/portraits/women/9.jpg"
+  },
+  {
+    "id": 10,
+    "nombre": "Pau",
+    "apellidos": "Jimenez Font",
+    "promocion": "2024/2025",
+    "ciclo": "SMX",
+    "urlImagen": "https://randomuser.me/api/portraits/men/10.jpg"
+  },
+  {
+    "id": 11,
+    "nombre": "Sofia",
+    "apellidos": "Romero Casals",
+    "promocion": "2022/2023",
+    "ciclo": "IEA",
+    "urlImagen": "https://randomuser.me/api/portraits/women/11.jpg"
+  },
+  {
+    "id": 12,
+    "nombre": "Albert",
+    "apellidos": "Hernandez Bosch",
+    "promocion": "2023/2024",
+    "ciclo": "IEA",
+    "urlImagen": "https://randomuser.me/api/portraits/men/12.jpg"
+  }
+]
