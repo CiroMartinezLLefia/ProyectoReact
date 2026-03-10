@@ -155,7 +155,7 @@ function App() {
 
       {/* Header */}
       <header className="relative z-10 border-b border-white/10">
-        <div className="max-w-7xl mx-auto px-6 py-5 lg:px-12">
+        <div className="max-w-screen-2xl mx-auto px-6 py-5 lg:px-12">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div className="flex items-center gap-4">
               <div className="p-3 bg-gradient-to-br from-violet-500 to-indigo-600 rounded-2xl shadow-lg shadow-violet-500/30">
@@ -180,7 +180,7 @@ function App() {
       </header>
 
       {/* Contenido principal */}
-      <main className="relative z-10 max-w-7xl mx-auto px-6 py-10 lg:px-12">
+      <main className="relative z-10 max-w-screen-2xl mx-auto px-6 py-10 lg:px-12">
         {/* Barra de filtros */}
         <div className="glass-card rounded-3xl p-6 mb-10">
           <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6">
@@ -225,7 +225,7 @@ function App() {
 
         {/* Grid de alumnos */}
         {alumnosFiltrados.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
             {alumnosFiltrados.map(alumno => (
               <Alumno
                 key={alumno.id}

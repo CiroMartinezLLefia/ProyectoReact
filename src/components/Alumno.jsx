@@ -8,7 +8,7 @@ function Alumno({ nombre, apellidos, promo, ciclo, esAdmin, onEdit, onDelete, ch
   };
 
   return (
-    <div className="glass-card rounded-3xl p-6 relative group transition-all duration-300 cursor-pointer">
+    <div className="glass-card alumno-card rounded-3xl p-6 relative group transition-all duration-300 cursor-pointer">
       {/* Gradient border effect on hover */}
       <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-violet-500/20 via-transparent to-cyan-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
       

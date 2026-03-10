@@ -4,20 +4,20 @@ function formato(alumno) {
   return {
     nombre: alumno.nombre,
     apellidos: alumno.apellidos,
-    promocion: alumno.promo,
-    ciclo: alumno.curso,
-    urlImagen: alumno.url
+    promocion: alumno.promocion,
+    ciclo: alumno.ciclo,
+    urlImagen: alumno.urlImagen
   }
 }
 
-function fotmatoApi(apiAlumno) {
+function formatoApi(apiAlumno) {
   return {
     id: apiAlumno._id,
     nombre: apiAlumno.nombre,
     apellidos: apiAlumno.apellidos,
-    promo: apiAlumno.promocion,
-    curso: apiAlumno.ciclo,
-    url: apiAlumno.urlImagen
+    promocion: apiAlumno.promocion,
+    ciclo: apiAlumno.ciclo,
+    urlImagen: apiAlumno.urlImagen
   }
 }
 
@@ -26,7 +26,7 @@ export const alumnosService = {
     try {
       const res = await fetch(`${urlApi}/alumnos`)
       const data = await res.json()
-      return (data || []).map(fotmatoApi)
+      return (data || []).map(formatoApi)
     } catch (err) {
       console.error('getAll error', err)
     }
@@ -40,7 +40,7 @@ export const alumnosService = {
         body: JSON.stringify(formato(alumno))
       })
       const created = await res.json()
-      return fotmatoApi(created)
+      return formatoApi(created)
     } catch (err) {
       console.error('create error', err)
     }
@@ -54,7 +54,7 @@ export const alumnosService = {
         body: JSON.stringify(formato(datos))
       })
       const updated = await res.json()
-      return fotmatoApi(updated)
+      return formatoApi(updated)
     } catch (err) {
       console.error('update error', err)
 
