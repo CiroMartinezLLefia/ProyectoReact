@@ -1,173 +1,103 @@
-import '../App.css'
-import { useState, useEffect } from 'react'
-import SelectorPromocion from './componentes/SelectorPromocion'
-import FiltroNombre from './componentes/FiltroNombre'
-import ListaAlumnos from './componentes/ListaAlumnos'
-import FormularioAlumno from './componentes/FormularioAlumno'
-import { Login } from './componentes/Login'
-import { InfoAdmin } from './componentes/InfoAdmin'
-import { alumnosService } from './services/alumnosServices'
-import initialData from './data/alumnos.json'
+import { useState, useEffect } from 'react';
 
-export default function App() {
-  const [promocion, setPromocion] = useState('')
-  const [nombre, setNombre] = useState("")
-  const [user, setUser] = useState(null)
-  const [alumnos, setAlumnos] = useState([])
-  const [formOpen, setFormOpen] = useState(false)
-  const [editingAlumno, setEditingAlumno] = useState(null)
+export default function FormularioAlumno({ alumno, onSubmit, onCancel }) {
+  const [nombre, setNombre] = useState('');
+  const [apellidos, setApellidos] = useState('');
+  const [promocion, setPromocion] = useState('');
+  const [ciclo, setCiclo] = useState('');
+  const [urlImagen, setUrlImagen] = useState('');
 
   useEffect(() => {
-    
-    const rawUser = localStorage.getItem('user')
-    if (rawUser) setUser(JSON.parse(rawUser))
-
-    
-    async function load() {
-      try {
-        const saved = await alumnosService.getAll()
-        if (saved && saved.length) {
-          setAlumnos(saved)
-        } else {
-          
-          const created = []
-          for (const a of initialData) {
-            const c = await alumnosService.create(a)
-            created.push(c)
-          }
-          setAlumnos(created)
-        }
-      } catch (err) {
-        console.error('Error cargando alumnos', err)
-      }
+    if (alumno) {
+      setNombre(alumno.nombre || '');
+      setApellidos(alumno.apellidos || '');
+      setPromocion(alumno.promocion || '');
+      setCiclo(alumno.ciclo || '');
+      setUrlImagen(alumno.urlImagen || '');
     }
-    load()
-  }, [])
+  }, [alumno]);
 
-  useEffect(() => {
-    
-    if (user) localStorage.setItem('user', JSON.stringify(user))
-    else localStorage.removeItem('user')
-  }, [user])
-
-  function controlPromocion(e) {
-    setPromocion(e.target.value)
-  }
-
-  function controlNombre(e) {
-    setNombre(e.target.value)
-  }
-
-  const alumnosFiltrados = alumnos.filter((al) => {
-    const okP = promocion === '' || al.promo === promocion
-    const textoBusqueda = nombre.toLowerCase()
-    const nombreCompleto = `${al.nombre} ${al.apellidos}`.toLowerCase()
-    const okN = nombreCompleto.includes(textoBusqueda)
-    return okP && okN
-  })
-
-  function handleLogin(userObj) {
-    setUser(userObj)
-  }
-
-  function handleLogout() {
-    setUser(null)
-  }
-
-  async function crearAlumno(datos) {
-    try {
-      await alumnosService.create(datos)
-      const all = await alumnosService.getAll()
-      setAlumnos(all)
-      setFormOpen(false)
-    } catch (err) {
-      console.error('Error creando alumno', err)
-      throw err
-    }
-  }
-
-  async function editarAlumno(id, datos) {
-    try {
-      await alumnosService.update(id, datos)
-      const all = await alumnosService.getAll()
-      setAlumnos(all)
-      setFormOpen(false)
-      setEditingAlumno(null)
-    } catch (err) {
-      console.error('Error actualizando alumno', err)
-      throw err
-    }
-  }
-
-  function eliminarAlumno(id) {
-    if (!confirm('¿Eliminar alumno?')) return
-    ;(async () => {
-      try {
-        await alumnosService.delete(id)
-        const all = await alumnosService.getAll()
-        setAlumnos(all)
-      } catch (err) {
-        console.error('Error eliminando alumno', err)
-        alert('Error al eliminar: ' + err.message)
-      }
-    })()
-  }
-
-  function openCrear() {
-    setEditingAlumno(null)
-    setFormOpen(true)
-  }
-
-  function openEditar(alumno) {
-    setEditingAlumno(alumno)
-    setFormOpen(true)
-  }
-
-  if (!user) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <div className="w-80">
-          <h1 className="text-2xl mb-4">Iniciar sesión</h1>
-          <Login onLogin={handleLogin} />
-        </div>
-      </div>
-    )
-  }
-
-  const promociones = Array.from(new Set(alumnos.map(a => a.promo))).sort()
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onSubmit({ nombre, apellidos, promocion, ciclo, urlImagen });
+  };
 
   return (
-    <div className="min-h-screen">
-      <header className="bg-gradient-to-r from-sky-700 to-indigo-800 text-white shadow-lg">
-        <div className="container mx-auto max-w-6xl p-4 flex items-center justify-between">
+    <div className="fixed inset-0 bg-black/70 backdrop-blur-md flex items-center justify-center p-4 z-50">
+      <div className="glass-card rounded-3xl w-full max-w-lg p-8">
+        <h2 className="text-2xl font-bold text-white mb-6">
+          {alumno ? "Editar Alumne" : "Nou Alumne"}
+        </h2>
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <h1 className="text-2xl font-bold">Anuario Alumnos</h1>
+            <label className="block text-white/70 text-sm mb-1">Nom</label>
+            <input
+              type="text"
+              value={nombre}
+              onChange={(e) => setNombre(e.target.value)}
+              required
+              className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/30 focus:outline-none focus:border-violet-500"
+            />
           </div>
-          <div className="flex items-center gap-4">
-            <InfoAdmin user={user} onLogout={handleLogout} />
-            {user?.isAdmin && (
-              <button onClick={openCrear} className="bg-white text-sky-700 px-4 py-2 rounded shadow">Añadir alumno</button>
-            )}
+          <div>
+            <label className="block text-white/70 text-sm mb-1">Cognoms</label>
+            <input
+              type="text"
+              value={apellidos}
+              onChange={(e) => setApellidos(e.target.value)}
+              required
+              className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/30 focus:outline-none focus:border-violet-500"
+            />
           </div>
-        </div>
-      </header>
-
-      <main className="container mx-auto max-w-6xl p-6">
-        <div className="mb-6 flex flex-col md:flex-row md:items-center md:gap-6">
-          <div className="flex items-center gap-4">
-            <SelectorPromocion controlPromocion={controlPromocion} datosPromo={["", ...promociones]} />
-            <FiltroNombre controlNombre={controlNombre} />
+          <div>
+            <label className="block text-white/70 text-sm mb-1">Promoció</label>
+            <input
+              type="text"
+              value={promocion}
+              onChange={(e) => setPromocion(e.target.value)}
+              required
+              placeholder="2024/2025"
+              className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/30 focus:outline-none focus:border-violet-500"
+            />
           </div>
-        </div>
-
-        {formOpen && (
-          <div className="mb-6">
-            <FormularioAlumno alumno={editingAlumno} onSubmit={(data) => editingAlumno ? editarAlumno(editingAlumno.id, data) : crearAlumno(data)} onCancel={() => { setFormOpen(false); setEditingAlumno(null) }} />
+          <div>
+            <label className="block text-white/70 text-sm mb-1">Cicle</label>
+            <input
+              type="text"
+              value={ciclo}
+              onChange={(e) => setCiclo(e.target.value)}
+              required
+              placeholder="DAW"
+              className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/30 focus:outline-none focus:border-violet-500"
+            />
           </div>
-        )}
-
-        <ListaAlumnos alumnos={alumnosFiltrados} onEdit={openEditar} onDelete={eliminarAlumno} esAdmin={!!user?.isAdmin} />
-      </main>
+          <div>
+            <label className="block text-white/70 text-sm mb-1">URL Imatge</label>
+            <input
+              type="url"
+              value={urlImagen}
+              onChange={(e) => setUrlImagen(e.target.value)}
+              placeholder="https://..."
+              className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/30 focus:outline-none focus:border-violet-500"
+            />
+          </div>
+          <div className="flex gap-4 pt-4">
+            <button
+              type="button"
+              onClick={onCancel}
+              className="flex-1 px-6 py-3 bg-white/10 text-white font-medium rounded-2xl hover:bg-white/20 transition-all border border-white/10"
+            >
+              Cancel·lar
+            </button>
+            <button
+              type="submit"
+              className="flex-1 px-6 py-3 bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-medium rounded-2xl hover:from-violet-500 hover:to-indigo-500 transition-all shadow-lg shadow-violet-500/25"
+            >
+              {alumno ? "Guardar" : "Crear"}
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
-  )
+  );
 }
