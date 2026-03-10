@@ -1,4 +1,4 @@
-const urlApi = 'https://backendmain1.vercel.app'
+const urlApi = 'https://backendmain1.vercel.app/api'
 
 function formato(alumno) {
   return {
