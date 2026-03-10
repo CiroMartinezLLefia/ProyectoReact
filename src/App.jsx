@@ -40,10 +40,12 @@ function App() {
     cargarAuth();
   }, []);
 
-  const cargarAlumnos = () => {
-    const data = alumnosService.getAll();
-    setAlumnos(data);
-    actualizarPromociones(data);
+  const cargarAlumnos = async () => {
+    const data = await alumnosService.getAll();
+    if (data) {
+      setAlumnos(data);
+      actualizarPromociones(data);
+    }
   };
 
   const actualizarPromociones = (data) => {
@@ -81,24 +83,24 @@ function App() {
   };
 
   // Funciones CRUD
-  const crearAlumno = (datos) => {
-    alumnosService.create(datos);
-    cargarAlumnos();
+  const crearAlumno = async (datos) => {
+    await alumnosService.create(datos);
+    await cargarAlumnos();
     setShowFormulario(false);
   };
 
-  const editarAlumno = (datos) => {
+  const editarAlumno = async (datos) => {
     if (alumnoEditando) {
-      alumnosService.update(alumnoEditando.id, datos);
-      cargarAlumnos();
+      await alumnosService.update(alumnoEditando.id, datos);
+      await cargarAlumnos();
       setShowFormulario(false);
       setAlumnoEditando(null);
     }
   };
 
-  const eliminarAlumno = (id) => {
-    alumnosService.delete(id);
-    cargarAlumnos();
+  const eliminarAlumno = async (id) => {
+    await alumnosService.delete(id);
+    await cargarAlumnos();
     setAlumnoAEliminar(null);
   };
 

@@ -1,209 +1,173 @@
-import { useState, useEffect } from 'react';
+import './App.css'
+import { useState, useEffect } from 'react'
+import SelectorPromocion from './componentes/SelectorPromocion'
+import FiltroNombre from './componentes/FiltroNombre'
+import ListaAlumnos from './componentes/ListaAlumnos'
+import FormularioAlumno from './componentes/FormularioAlumno'
+import { Login } from './componentes/Login'
+import { InfoAdmin } from './componentes/InfoAdmin'
+import { alumnosService } from './services/alumnosServices'
+import initialData from './data/alumnos.json'
 
-const CICLOS = ['DAW', 'SMX', 'ARI', 'IEA'];
-const PROMOCIONES = ['2022/2023', '2023/2024', '2024/2025', '2025/2026'];
+export default function App() {
+  const [promocion, setPromocion] = useState('')
+  const [nombre, setNombre] = useState("")
+  const [user, setUser] = useState(null)
+  const [alumnos, setAlumnos] = useState([])
+  const [formOpen, setFormOpen] = useState(false)
+  const [editingAlumno, setEditingAlumno] = useState(null)
 
-function FormularioAlumno({ alumno, onSubmit, onCancel }) {
-  const [formData, setFormData] = useState({
-    nombre: '',
-    apellidos: '',
-    promocion: '',
-    ciclo: '',
-    urlImagen: ''
-  });
-  const [errors, setErrors] = useState({});
-
-  // Cargar datos del alumno si estamos en modo edición
   useEffect(() => {
-    if (alumno) {
-      setFormData({
-        nombre: alumno.nombre || '',
-        apellidos: alumno.apellidos || '',
-        promocion: alumno.promocion || '',
-        ciclo: alumno.ciclo || '',
-        urlImagen: alumno.urlImagen || ''
-      });
-    }
-  }, [alumno]);
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-    // Limpiar error del campo cuando se modifica
-    if (errors[name]) {
-      setErrors(prev => ({
-        ...prev,
-        [name]: ''
-      }));
-    }
-  };
-
-  const validate = () => {
-    const newErrors = {};
-    if (!formData.nombre.trim()) newErrors.nombre = 'El nom és obligatori';
-    if (!formData.apellidos.trim()) newErrors.apellidos = 'Els cognoms són obligatoris';
-    if (!formData.promocion) newErrors.promocion = 'La promoció és obligatòria';
-    if (!formData.ciclo) newErrors.ciclo = 'El cicle és obligatori';
-    if (!formData.urlImagen.trim()) newErrors.urlImagen = 'La URL de la imatge és obligatòria';
     
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+    const rawUser = localStorage.getItem('user')
+    if (rawUser) setUser(JSON.parse(rawUser))
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (validate()) {
-      onSubmit(formData);
-    }
-  };
-
-  return (
-    <div className="fixed inset-0 bg-black/70 backdrop-blur-md flex items-center justify-center p-4 z-50">
-      <div className="glass-card rounded-3xl w-full max-w-md max-h-[90vh] overflow-y-auto">
-        <div className="p-8">
-          <h2 className="text-2xl font-bold text-white mb-6">
-            {alumno ? 'Editar Alumne' : 'Nou Alumne'}
-          </h2>
+    
+    async function load() {
+      try {
+        const saved = await alumnosService.getAll()
+        if (saved && saved.length) {
+          setAlumnos(saved)
+        } else {
           
-          <form onSubmit={handleSubmit} className="space-y-5">
-            {/* Nombre */}
-            <div>
-              <label htmlFor="nombre" className="block text-sm font-medium text-white/60 mb-2">
-                Nom *
-              </label>
-              <input
-                type="text"
-                id="nombre"
-                name="nombre"
-                value={formData.nombre}
-                onChange={handleChange}
-                className={`dark-input w-full px-4 py-3 rounded-xl ${
-                  errors.nombre ? 'border-red-500/50' : ''
-                }`}
-              />
-              {errors.nombre && <p className="text-red-400 text-sm mt-2">{errors.nombre}</p>}
-            </div>
+          const created = []
+          for (const a of initialData) {
+            const c = await alumnosService.create(a)
+            created.push(c)
+          }
+          setAlumnos(created)
+        }
+      } catch (err) {
+        console.error('Error cargando alumnos', err)
+      }
+    }
+    load()
+  }, [])
 
-            {/* Apellidos */}
-            <div>
-              <label htmlFor="apellidos" className="block text-sm font-medium text-white/60 mb-2">
-                Cognoms *
-              </label>
-              <input
-                type="text"
-                id="apellidos"
-                name="apellidos"
-                value={formData.apellidos}
-                onChange={handleChange}
-                className={`dark-input w-full px-4 py-3 rounded-xl ${
-                  errors.apellidos ? 'border-red-500/50' : ''
-                }`}
-              />
-              {errors.apellidos && <p className="text-red-400 text-sm mt-2">{errors.apellidos}</p>}
-            </div>
+  useEffect(() => {
+    
+    if (user) localStorage.setItem('user', JSON.stringify(user))
+    else localStorage.removeItem('user')
+  }, [user])
 
-            {/* Promoción */}
-            <div>
-              <label htmlFor="promocion" className="block text-sm font-medium text-white/60 mb-2">
-                Promoció *
-              </label>
-              <select
-                id="promocion"
-                name="promocion"
-                value={formData.promocion}
-                onChange={handleChange}
-                className={`dark-input w-full px-4 py-3 rounded-xl cursor-pointer ${
-                  errors.promocion ? 'border-red-500/50' : ''
-                }`}
-              >
-                <option value="">Selecciona una promoció</option>
-                {PROMOCIONES.map(promo => (
-                  <option key={promo} value={promo}>{promo}</option>
-                ))}
-              </select>
-              {errors.promocion && <p className="text-red-400 text-sm mt-2">{errors.promocion}</p>}
-            </div>
+  function controlPromocion(e) {
+    setPromocion(e.target.value)
+  }
 
-            {/* Ciclo */}
-            <div>
-              <label htmlFor="ciclo" className="block text-sm font-medium text-white/60 mb-2">
-                Cicle *
-              </label>
-              <select
-                id="ciclo"
-                name="ciclo"
-                value={formData.ciclo}
-                onChange={handleChange}
-                className={`dark-input w-full px-4 py-3 rounded-xl cursor-pointer ${
-                  errors.ciclo ? 'border-red-500/50' : ''
-                }`}
-              >
-                <option value="">Selecciona un cicle</option>
-                {CICLOS.map(ciclo => (
-                  <option key={ciclo} value={ciclo}>{ciclo}</option>
-                ))}
-              </select>
-              {errors.ciclo && <p className="text-red-400 text-sm mt-2">{errors.ciclo}</p>}
-            </div>
+  function controlNombre(e) {
+    setNombre(e.target.value)
+  }
 
-            {/* URL Imagen */}
-            <div>
-              <label htmlFor="urlImagen" className="block text-sm font-medium text-white/60 mb-2">
-                URL de la imatge *
-              </label>
-              <input
-                type="url"
-                id="urlImagen"
-                name="urlImagen"
-                value={formData.urlImagen}
-                onChange={handleChange}
-                placeholder="https://..."
-                className={`dark-input w-full px-4 py-3 rounded-xl ${
-                  errors.urlImagen ? 'border-red-500/50' : ''
-                }`}
-              />
-              {errors.urlImagen && <p className="text-red-400 text-sm mt-2">{errors.urlImagen}</p>}
-            </div>
+  const alumnosFiltrados = alumnos.filter((al) => {
+    const okP = promocion === '' || al.promo === promocion
+    const textoBusqueda = nombre.toLowerCase()
+    const nombreCompleto = `${al.nombre} ${al.apellidos}`.toLowerCase()
+    const okN = nombreCompleto.includes(textoBusqueda)
+    return okP && okN
+  })
 
-            {/* Vista previa de la imagen */}
-            {formData.urlImagen && (
-              <div className="flex justify-center">
-                <div className="relative">
-                  <div className="absolute inset-0 rounded-full bg-gradient-to-br from-violet-500 to-cyan-500 blur-lg opacity-50"></div>
-                  <img
-                    src={formData.urlImagen}
-                    alt="Vista prèvia"
-                    className="relative w-24 h-24 rounded-full object-cover ring-2 ring-white/20"
-                    onError={(e) => e.target.style.display = 'none'}
-                  />
-                </div>
-              </div>
-            )}
+  function handleLogin(userObj) {
+    setUser(userObj)
+  }
 
-            {/* Botones */}
-            <div className="flex gap-4 pt-4">
-              <button
-                type="button"
-                onClick={onCancel}
-                className="flex-1 px-6 py-3 bg-white/10 text-white font-medium rounded-2xl hover:bg-white/20 transition-all border border-white/10"
-              >
-                Cancel·lar
-              </button>
-              <button
-                type="submit"
-                className="flex-1 px-6 py-3 bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-medium rounded-2xl hover:from-violet-500 hover:to-indigo-500 transition-all shadow-lg shadow-violet-500/25"
-              >
-                {alumno ? 'Guardar canvis' : 'Crear alumne'}
-              </button>
-            </div>
-          </form>
+  function handleLogout() {
+    setUser(null)
+  }
+
+  async function crearAlumno(datos) {
+    try {
+      await alumnosService.create(datos)
+      const all = await alumnosService.getAll()
+      setAlumnos(all)
+      setFormOpen(false)
+    } catch (err) {
+      console.error('Error creando alumno', err)
+      throw err
+    }
+  }
+
+  async function editarAlumno(id, datos) {
+    try {
+      await alumnosService.update(id, datos)
+      const all = await alumnosService.getAll()
+      setAlumnos(all)
+      setFormOpen(false)
+      setEditingAlumno(null)
+    } catch (err) {
+      console.error('Error actualizando alumno', err)
+      throw err
+    }
+  }
+
+  function eliminarAlumno(id) {
+    if (!confirm('¿Eliminar alumno?')) return
+    ;(async () => {
+      try {
+        await alumnosService.delete(id)
+        const all = await alumnosService.getAll()
+        setAlumnos(all)
+      } catch (err) {
+        console.error('Error eliminando alumno', err)
+        alert('Error al eliminar: ' + err.message)
+      }
+    })()
+  }
+
+  function openCrear() {
+    setEditingAlumno(null)
+    setFormOpen(true)
+  }
+
+  function openEditar(alumno) {
+    setEditingAlumno(alumno)
+    setFormOpen(true)
+  }
+
+  if (!user) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="w-80">
+          <h1 className="text-2xl mb-4">Iniciar sesión</h1>
+          <Login onLogin={handleLogin} />
         </div>
       </div>
-    </div>
-  );
-}
+    )
+  }
 
-export default FormularioAlumno;
+  const promociones = Array.from(new Set(alumnos.map(a => a.promo))).sort()
+
+  return (
+    <div className="min-h-screen">
+      <header className="bg-gradient-to-r from-sky-700 to-indigo-800 text-white shadow-lg">
+        <div className="container mx-auto max-w-6xl p-4 flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold">Anuario Alumnos</h1>
+          </div>
+          <div className="flex items-center gap-4">
+            <InfoAdmin user={user} onLogout={handleLogout} />
+            {user?.isAdmin && (
+              <button onClick={openCrear} className="bg-white text-sky-700 px-4 py-2 rounded shadow">Añadir alumno</button>
+            )}
+          </div>
+        </div>
+      </header>
+
+      <main className="container mx-auto max-w-6xl p-6">
+        <div className="mb-6 flex flex-col md:flex-row md:items-center md:gap-6">
+          <div className="flex items-center gap-4">
+            <SelectorPromocion controlPromocion={controlPromocion} datosPromo={["", ...promociones]} />
+            <FiltroNombre controlNombre={controlNombre} />
+          </div>
+        </div>
+
+        {formOpen && (
+          <div className="mb-6">
+            <FormularioAlumno alumno={editingAlumno} onSubmit={(data) => editingAlumno ? editarAlumno(editingAlumno.id, data) : crearAlumno(data)} onCancel={() => { setFormOpen(false); setEditingAlumno(null) }} />
+          </div>
+        )}
+
+        <ListaAlumnos alumnos={alumnosFiltrados} onEdit={openEditar} onDelete={eliminarAlumno} esAdmin={!!user?.isAdmin} />
+      </main>
+    </div>
+  )
+}
