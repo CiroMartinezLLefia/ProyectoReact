@@ -1,4 +1,4 @@
-import './App.css'
+import '../App.css'
 import { useState, useEffect } from 'react'
 import SelectorPromocion from './componentes/SelectorPromocion'
 import FiltroNombre from './componentes/FiltroNombre'
